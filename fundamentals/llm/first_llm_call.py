@@ -8,14 +8,28 @@ load_dotenv()
 
 client = OpenAI()
 
-text = """
-I am transitioning into AI engineering and building real-world projects
-to strengthen my skills in LLM-based applications.
-"""
-
 response = client.responses.create(
     model="gpt-4.1-mini",
-    input=f"Summarize this:\n{text}"
+    input="""
+Extract the following from this text and return JSON:
+
+- goal
+- domain
+- intent
+
+Text:
+I am transitioning into AI engineering and building real-world projects.
+"""
 )
 
-print(response.output_text)
+import json
+
+raw_output = response.output_text
+
+# Remove markdown if present
+cleaned = raw_output.replace("```json", "").replace("```", "").strip()
+
+data = json.loads(cleaned)
+
+print(data)
+print("\nGoal:", data["goal"])
